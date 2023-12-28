@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todoapp/presentation/widget/app_bar.dart';
+import 'package:todoapp/presentation/widget/bottom_sheet.dart';
 import 'package:todoapp/presentation/widget/k_text.dart';
 
 class HomePage extends ConsumerWidget {
@@ -27,6 +28,19 @@ class HomePage extends ConsumerWidget {
           ],
         ),
       ),
+      bottomNavigationBar: MyBottomBar.BottomBarr(onTap: () {
+        showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (BuildContext context) {
+            return Padding(
+              padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: const CustomBottomSheetTodo(),
+            );
+          },
+        );
+      }),
     );
   }
 }
