@@ -1,4 +1,6 @@
 ## To Do's App Preview
+
+To see the video format download [Here](https://github.com/gusentanan/todoapp/raw/main/arts/todos-record.mp4)
 <table>
   <tr>
      <td>Home</td>
