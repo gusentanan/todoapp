@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todoapp/presentation/widget/app_bar.dart';
 import 'package:todoapp/presentation/widget/k_text.dart';
 
 class HomePage extends ConsumerWidget {
@@ -8,6 +9,9 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      appBar: MyAppBar.AppBarr(
+        onFilterChanged: (criteria) {},
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
