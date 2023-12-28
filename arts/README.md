@@ -3,9 +3,9 @@
 To see the video format download [Here](https://github.com/gusentanan/todoapp/raw/main/arts/todos-record.mp4)
 <table>
   <tr>
-     <td>Home</td>
-     <td>Detail</td>
-     <td>Setting</td>
+     <td></td>
+     <td></td>
+     <td></td>
   </tr>
   <tr>
     <td><img src="https://github.com/gusentanan/todoapp/assets/68723002/228a349c-73da-4dc4-892a-fcb734369c4d" width=280 ></td>
