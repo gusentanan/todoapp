@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todoapp/presentation/data/models/todo_table.dart';
+import 'package:todoapp/data/models/todo_table.dart';
 import 'package:todoapp/presentation/themes/app_theme.dart';
 import 'package:todoapp/presentation/widget/k_text.dart';
 
