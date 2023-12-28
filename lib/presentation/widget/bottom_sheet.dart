@@ -3,15 +3,21 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:todoapp/data/models/todo_table.dart';
 import 'package:todoapp/presentation/widget/button.dart';
 import 'package:todoapp/presentation/widget/k_text.dart';
+import 'package:todoapp/providers/todo_provider.dart';
 
 class CustomBottomSheetTodo extends ConsumerStatefulWidget {
+  final ToDosTable? todo;
   final void Function()? onPressedCreate;
   final void Function()? onPressedCancel;
 
   const CustomBottomSheetTodo(
-      {Key? key, this.onPressedCreate, this.onPressedCancel})
+      {Key? key,
+      required this.todo,
+      this.onPressedCreate,
+      this.onPressedCancel})
       : super(key: key);
 
   @override
@@ -22,6 +28,16 @@ class CustomBottomSheetTodo extends ConsumerStatefulWidget {
 class _CreateTodoScreenState extends ConsumerState<CustomBottomSheetTodo> {
   final TextEditingController _titleController = TextEditingController();
   late bool _isEditMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _isEditMode = widget.todo != null;
+    _titleController.text = widget.todo?.title ?? '';
+    _titleController.selection = TextSelection.fromPosition(
+      TextPosition(offset: _titleController.text.length),
+    );
+  }
 
   @override
   void dispose() {
@@ -139,6 +155,7 @@ class _CreateTodoScreenState extends ConsumerState<CustomBottomSheetTodo> {
                     child: MyPrimaryButton(
                       text: _isEditMode ? "Update" : "Create",
                       onTap: () {
+                        _createOrUpdateTask();
                         Navigator.pop(context);
                       },
                     ),
@@ -151,5 +168,24 @@ class _CreateTodoScreenState extends ConsumerState<CustomBottomSheetTodo> {
         ),
       ),
     );
+  }
+
+  void _createOrUpdateTask() async {
+    final title = _titleController.text.trim();
+
+    if (title.isNotEmpty) {
+      if (widget.todo == null) {
+        // Create a new task if widget.todo is null
+        final todo = ToDosTable(
+          title: title,
+          isCompleted: false,
+        );
+        await ref.read(todoProvider.notifier).createToDosTable(todo);
+      } else {
+        await ref
+            .read(todoProvider.notifier)
+            .updateToDosTable(widget.todo!.copyWith(title: title));
+      }
+    }
   }
 }
