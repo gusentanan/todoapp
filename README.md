@@ -9,7 +9,7 @@
 </table>
 
 ## Project Environment
-- You can see the App Preview [here](https://github.com/gusentanan/todoapp/arts)
+- You can see the App Preview [here](https://github.com/gusentanan/todoapp/tree/main/arts)
 
 ## Architecture 
 ![todos](https://github.com/gusentanan/todoapp/assets/68723002/db150ea6-431c-4d96-afcd-8a6a03679441)
