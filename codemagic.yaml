@@ -1,11 +1,11 @@
 workflows:
   android-workflow-id:
-    name: Android ToDo's App Workflow
+    name: "Android ToDo's App Workflow"
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
-      vars: GITHUB_TOKEN
       flutter: stable
+      vars: GITHUB_TOKEN
     cache:
       cache_paths:
         - ~/.pub-cache
@@ -13,6 +13,10 @@ workflows:
       events:
         - tag
       branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
+      tag_patterns:
         - pattern: "*"
           include: true
           source: true
@@ -30,28 +34,20 @@ workflows:
       - name: Show Build apk Folder
         script: |
           ls build/app/outputs/flutter-apk
+      - name: Publish github
+        ignore_failure: true
+        script: |
+          # Publish only for tag builds
+          if [ -z ${CM_TAG} ]; then
+            echo "Not a tag build, will not publish GitHub release"
+            exit 0
+          fi
+
+          gh release upload "${CM_TAG}" \
+              build/app/outputs/flutter-apk/*.apk
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
         recipients:
           - bagusmertasntn@gmail.com
-      scripts:
-        - name: Publish to GitHub
-          script: |
-            #!/usr/bin/env zsh
-
-            # Publish only for tag builds
-            if [ -z ${CM_TAG} ]; then
-              echo "Not a tag build, will not publish GitHub release"
-              exit 0
-            fi
-
-            gh release create "${CM_TAG}" \
-              --title "<ToDos> ${CM_TAG}" \
-              --notes-file changelog.md \
-              build/app/outputs/flutter-apk/*.apk
-              
-
-            # Note that you don't need to include title and changelog if you do not want to.
-            # Any number of artifacts can be included with the release.
