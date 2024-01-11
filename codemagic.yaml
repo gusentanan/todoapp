@@ -30,7 +30,7 @@ workflows:
         script: |
           ls build/app/outputs/flutter-apk
     artifacts:
-      - app/build/**/outputs/**/*.apk
+      - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
         recipients:
