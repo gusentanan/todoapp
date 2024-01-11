@@ -26,7 +26,6 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       flutter: stable
-    script:
     scripts:
       - name: Set up code signing settings on Xcode project
         script: |
