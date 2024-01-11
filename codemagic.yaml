@@ -4,8 +4,7 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
-      vars:
-        GITHUB_TOKEN
+      vars: GITHUB_TOKEN
       flutter: stable
     cache:
       cache_paths:
@@ -17,8 +16,8 @@ workflows:
         - pattern: "*"
           include: true
           source: true
-      tag_patterns:                
-        - pattern: '*'
+      tag_patterns:
+        - pattern: "*"
           include: true
           source: true
       cancel_previous_builds: false
@@ -50,16 +49,14 @@ workflows:
             else
               echo "Publishing .apk artifacts"
             fi
-      scripts: 
         - name: Publish to Github
           script: |
             if [ -z ${CM_TAG} ]; then
               echo "Not a tag build will not publish GitHub release"
               exit 0
             fi 
-            
-          gh release create "${CM_TAG}" \
-              --title "<ToDos> ${CM_TAG}" \
-              --notes-file changelog.md \
-              build/app/outputs/flutter-apk/*.apk
-              
+
+            gh release create "${CM_TAG}" \
+                --title "<ToDos> ${CM_TAG}" \
+                --notes-file changelog.md \
+                build/app/outputs/flutter-apk/*.apk
