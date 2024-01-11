@@ -26,7 +26,7 @@ workflows:
       - name: Build Debug App with Flutter
         script: |
           flutter build apk --debug
-      - name: Show Build Folder
+      - name: Show Build apk Folder
         script: |
           ls build/app/outputs/flutter-apk
     artifacts:
