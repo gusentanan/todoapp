@@ -6,7 +6,7 @@ workflows:
     environment:
       groups:
         - todos-app
-      vars: ${GITHUB_TOKEN}
+      vars: "${GITHUB_TOKEN}"
       flutter: stable
     cache:
       cache_paths:
