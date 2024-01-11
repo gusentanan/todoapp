@@ -37,26 +37,26 @@ workflows:
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
-      email:
-        recipients:
-          - bagusmertasntn@gmail.com
-      scripts:
-        - name: Check for apk
-          script: |
-            apkPath=$(find build -name "*.apk" | head -1)
-            if [[ -z ${apkPath} ]]; then
-              echo "No .apk files were found"
-            else
-              echo "Publishing .apk artifacts"
-            fi
-        - name: Publish to Github
-          script: |
-            if [ -z ${CM_TAG} ]; then
-              echo "Not a tag build will not publish GitHub release"
-              exit 0
-            fi 
+  email:
+    recipients:
+      - bagusmertasntn@gmail.com
+  scripts:
+    - name: Check for apk
+      script: |
+        apkPath=$(find build -name "*.apk" | head -1)
+        if [[ -z ${apkPath} ]]; then
+          echo "No .apk files were found"
+        else
+          echo "Publishing .apk artifacts"
+        fi
+    - name: Publish to Github
+      script: |
+        if [ -z ${CM_TAG} ]; then
+          echo "Not a tag build will not publish GitHub release"
+          exit 0
+        fi 
 
-            gh release create "${CM_TAG}" \
-                --title "<ToDos> ${CM_TAG}" \
-                --notes-file changelog.md \
-                build/app/outputs/flutter-apk/*.apk
+        gh release create "${CM_TAG}" \
+            --title "<ToDos> ${CM_TAG}" \
+            --notes-file changelog.md \
+            build/app/outputs/flutter-apk/*.apk
