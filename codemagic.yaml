@@ -17,7 +17,7 @@ workflows:
         - pattern: "*"
           include: true
           source: true
-      tag_patterns:                 # Include or exclude watched tag labels
+      tag_patterns:                
         - pattern: '*'
           include: true
           source: true
@@ -57,6 +57,7 @@ workflows:
               echo "Not a tag build will not publish GitHub release"
               exit 0
             fi 
+            
           gh release create "${CM_TAG}" \
               --title "<ToDos> ${CM_TAG}" \
               --notes-file changelog.md \
