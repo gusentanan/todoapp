@@ -16,10 +16,6 @@ workflows:
         - pattern: "*"
           include: true
           source: true
-      tag_patterns:
-        - pattern: "*"
-          include: true
-          source: true
       cancel_previous_builds: false
     scripts:
       - name: Set up local.properties
@@ -37,26 +33,25 @@ workflows:
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
-  email:
-    recipients:
-      - bagusmertasntn@gmail.com
-  scripts:
-    - name: Check for apk
-      script: |
-        apkPath=$(find build -name "*.apk" | head -1)
-        if [[ -z ${apkPath} ]]; then
-          echo "No .apk files were found"
-        else
-          echo "Publishing .apk artifacts"
-        fi
-    - name: Publish to Github
-      script: |
-        if [ -z ${CM_TAG} ]; then
-          echo "Not a tag build will not publish GitHub release"
-          exit 0
-        fi 
+      email:
+        recipients:
+          - bagusmertasntn@gmail.com
+      scripts:
+        - name: Publish to GitHub
+          script: |
+            #!/usr/bin/env zsh
 
-        gh release create "${CM_TAG}" \
-            --title "<ToDos> ${CM_TAG}" \
-            --notes-file changelog.md \
-            build/app/outputs/flutter-apk/*.apk
+            # Publish only for tag builds
+            if [ -z ${CM_TAG} ]; then
+              echo "Not a tag build, will not publish GitHub release"
+              exit 0
+            fi
+
+            gh release create "${CM_TAG}" \
+              --title "<Your Application Name> ${CM_TAG}" \
+              --notes-file changelog.md \
+              path/to/build-artifact.ipa \
+              path/to/build-artifact.apk
+
+            # Note that you don't need to include title and changelog if you do not want to.
+            # Any number of artifacts can be included with the release.
