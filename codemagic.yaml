@@ -4,23 +4,23 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
+      vars:
+        GITHUB_TOKEN
       flutter: stable
     cache:
       cache_paths:
         - ~/.pub-cache
     triggering:
       events:
-        - push
         - tag
       branch_patterns:
         - pattern: "*"
           include: true
           source: true
       tag_patterns:                 # Include or exclude watched tag labels
-        - pattern: 'main'
+        - pattern: '*'
           include: true
-        - pattern: included-tag
-          include: true
+          source: true
       cancel_previous_builds: false
     scripts:
       - name: Set up local.properties
