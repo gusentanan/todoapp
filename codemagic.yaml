@@ -4,8 +4,10 @@ workflows:
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
-      flutter: stable
+      groups:
+        - todos-app
       vars: GITHUB_TOKEN
+      flutter: stable
     cache:
       cache_paths:
         - ~/.pub-cache
@@ -34,7 +36,7 @@ workflows:
       - name: Show Build apk Folder
         script: |
           ls build/app/outputs/flutter-apk
-      - name: Publish github
+      - name: Publish to Github
         ignore_failure: true
         script: |
           # Publish only for tag builds
