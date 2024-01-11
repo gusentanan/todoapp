@@ -11,10 +11,16 @@ workflows:
     triggering:
       events:
         - push
+        - tag
       branch_patterns:
         - pattern: "*"
           include: true
           source: true
+      tag_patterns:                 # Include or exclude watched tag labels
+        - pattern: 'main'
+          include: true
+        - pattern: included-tag
+          include: true
       cancel_previous_builds: false
     scripts:
       - name: Set up local.properties
@@ -44,3 +50,15 @@ workflows:
             else
               echo "Publishing .apk artifacts"
             fi
+      scripts: 
+        - name: Publish to Github
+          script: |
+            if [ -z ${CM_TAG} ]; then
+              echo "Not a tag build will not publish GitHub release"
+              exit 0
+            fi 
+          gh release create "${CM_TAG}" \
+              --title "<ToDos> ${CM_TAG}" \
+              --notes-file changelog.md \
+              build/app/outputs/flutter-apk/*.apk
+              
