@@ -16,9 +16,11 @@ workflows:
         script: |
           flutter build apk --debug
     artifacts:
-      - build/**/outputs/**/*.aab
-      - build/**/outputs/**/mapping.txt
-      - flutter_drive.log
+      - app/build/**/outputs/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - bagusmertasntn@gmail.com
 
   ios-workflow-id:
     name: iOS Sample Workflow
@@ -47,6 +49,9 @@ workflows:
         script: |
           flutter build ios --debug --no-codesign
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
+      - build/ios/app/*.app
+
+    publishing:
+      email:
+        recipients:
+          - bagusmertasntn@gmail.com
