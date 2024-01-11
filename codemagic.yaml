@@ -1,10 +1,21 @@
 workflows:
   android-workflow-id:
-    name: Codemagic Sample Workflow
+    name: Android ToDo's App Workflow
     max_build_duration: 120
     instance_type: mac_mini_m1
     environment:
       flutter: stable
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
+      cancel_previous_builds: false
     scripts:
       - name: Set up local.properties
         script: |
@@ -12,7 +23,7 @@ workflows:
       - name: Get Flutter packages
         script: |
           flutter packages pub get
-      - name: Build Debug app with Flutter
+      - name: Build Debug App with Flutter
         script: |
           flutter build apk --debug
     artifacts:
@@ -21,37 +32,5 @@ workflows:
       email:
         recipients:
           - bagusmertasntn@gmail.com
-
-  ios-workflow-id:
-    name: iOS Sample Workflow
-    max_build_duration: 120
-    instance_type: mac_mini_m1
-    environment:
-      flutter: stable
-    scripts:
-      - name: Set up code signing settings on Xcode project
-        script: |
-          xcode-project use-profiles
-      - name: Get Flutter packages
-        script: |
-          flutter packages pub get
-      - name: Install pods
-        script: |
-          find . -name "Podfile" -execdir pod install \;
-      - name: Flutter analyze
-        script: |
-          flutter analyze
-      - name: Flutter unit tests
-        script: |
-          flutter test
-        ignore_failure: true
-      - name: Flutter build ipa
-        script: |
-          flutter build ios --debug --no-codesign
-    artifacts:
-      - build/ios/app/*.app
-
-    publishing:
-      email:
-        recipients:
-          - bagusmertasntn@gmail.com
+      scripts:
+        - echo 'Post-publish script'
