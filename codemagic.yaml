@@ -45,7 +45,7 @@ workflows:
             exit 0
           fi
 
-          gh release upload "${CM_TAG}" \
+          gh release create "${CM_TAG}" \
               build/app/outputs/flutter-apk/*.apk
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
