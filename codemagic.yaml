@@ -94,9 +94,7 @@ workflows:
         script: |
           flutter build ios --debug --no-codesign
     artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
+      - /Users/builder/clone/build/ios/iphoneos/*.app
     publishing:
       # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
       email:
