@@ -5,6 +5,7 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       groups:
+        - discord_credentials
         - todos-app
       vars:
         GITHUB_TOKEN: "${GITHUB_TOKEN}"
@@ -37,23 +38,40 @@ workflows:
       - name: Show Build apk Folder
         script: |
           ls build/app/outputs/flutter-apk
-      # - name: Publish to Github
-      #   ignore_failure: true
-      #   script: |
-      #     # Publish only for tag builds
-      #     if [ -z ${CM_TAG} ]; then
-      #       echo "Not a tag build, will not publish GitHub release"
-      #       exit 0
-      #     fi
-
-      #     gh release create "${CM_TAG}" \
-      #         build/app/outputs/flutter-apk/*.apk
+      - name: Create a changelog
+        script: |
+          if [[ -z ${CM_PREVIOUS_COMMIT} ]]
+            then
+              echo "No finished builds found to generate changelog" | tee release_notes.txt
+            else
+              echo "$(git-changelog generate --previous-commit $CM_PREVIOUS_COMMIT)" | tee release_notes.txt
+          fi
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
         recipients:
           - bagusmertasntn@gmail.com
+      scripts:
+        - name: Discord notification
+          script: |
+            set -ex
+            APP_LINK=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name=="app.apk") | .url')
+
+            # Get first 7 digits of commit number
+            COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
+
+            # Get commit message
+            COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
+
+            # Get commit author
+            AUTHOR=$(git show -s --format='%ae' $CM_COMMIT)
+
+            # Publish the notification
+            curl -H "Content-Type: multipart/form-data" \
+            -F 'payload_json={"username" : "codemagic-bot", "content": "**Commit:** `'"$COMMIT"'`\n**Commit message:** '"$COMMIT_MESSAGE"'\n\n**Branch:** '"$CM_BRANCH"'\n**Author:** '"$AUTHOR"'\n\n**Artifacts: **\n\n'"$APP_LINK"'\n\n"}' \
+            -F "file1=@release_notes.txt" \
+            $DISCORD_WEBHOOK_URL
 
   ios-workflow:
     name: "iOS ToDo's App Workflow"
@@ -61,9 +79,10 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
+        - discord_credentials
         - todos-app
       flutter: stable
-      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      xcode: latest
       cocoapods: default
     cache:
       cache_paths:
