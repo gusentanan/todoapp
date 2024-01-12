@@ -56,22 +56,27 @@ workflows:
         - name: Discord notification
           script: |
             set -ex
-            APP_LINK=$(echo $CM_ARTIFACT_LINKS | jq -r '.[] | select(.name=="app.apk") | .url')
 
-            # Get first 7 digits of commit number
+            # Extract the App Link from CM_ARTIFACT_LINKS
+            APP_LINK=$(echo "$CM_ARTIFACT_LINKS" | jq -r '.[] | select(.name == "app-debug.apk") | .url')
+
+            # Get the first 7 digits of the commit number
             COMMIT=$(echo "${CM_COMMIT}" | sed 's/^\(........\).*/\1/;q')
 
-            # Get commit message
+            # Get the commit message
             COMMIT_MESSAGE=$(git log --format=%B -n 1 $CM_COMMIT)
 
-            # Get commit author
+            # Get the commit author
             AUTHOR=$(git show -s --format='%ae' $CM_COMMIT)
 
             # Publish the notification
             curl -H "Content-Type: multipart/form-data" \
-            -F 'payload_json={"username" : "codemagic-bot", "content": "**Commit:** `'"$COMMIT"'`\n**Commit message:** '"$COMMIT_MESSAGE"'\n\n**Branch:** '"$CM_BRANCH"'\n**Author:** '"$AUTHOR"'\n\n**Artifacts: **\n\n'"$APP_LINK"'\n\n"}' \
-            -F "file1=@release_notes.txt" \
-            $DISCORD_WEBHOOK_URL
+              -F "payload_json={
+                \"username\": \"codemagic-bot\",
+                \"content\": \"**Commit:** \`$COMMIT\`\\n**Commit message:** $COMMIT_MESSAGE\\n\\n**Branch:** $CM_BRANCH\\n**Author:** $AUTHOR\\n\\n**Artifacts:**\\n\\n**App Links:** $APP_LINK\\n\\n\"
+              }" \
+              -F "file1=@release_notes.txt" \
+              $DISCORD_WEBHOOK_URL
 
   ios-workflow:
     name: "iOS ToDo's App Workflow"
