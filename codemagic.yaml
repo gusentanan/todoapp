@@ -14,6 +14,7 @@ workflows:
         - ~/.pub-cache
     triggering:
       events:
+        - push
         - tag
       branch_patterns:
         - pattern: "*"
@@ -69,6 +70,7 @@ workflows:
         - ~/.pub-cache
     triggering:
       events:
+        - push
         - tag
       branch_patterns:
         - pattern: "*"
@@ -113,7 +115,3 @@ workflows:
         notify:
           success: true # To receive a notification when a build succeeds
           failure: false # To not receive a notification when a build fails
-
-        # Configuration related to App Store (optional)
-        # Note: This action is performed during post-processing.
-        submit_to_app_store: false
