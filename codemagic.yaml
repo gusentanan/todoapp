@@ -36,20 +36,84 @@ workflows:
       - name: Show Build apk Folder
         script: |
           ls build/app/outputs/flutter-apk
-      - name: Publish to Github
-        ignore_failure: true
-        script: |
-          # Publish only for tag builds
-          if [ -z ${CM_TAG} ]; then
-            echo "Not a tag build, will not publish GitHub release"
-            exit 0
-          fi
+      # - name: Publish to Github
+      #   ignore_failure: true
+      #   script: |
+      #     # Publish only for tag builds
+      #     if [ -z ${CM_TAG} ]; then
+      #       echo "Not a tag build, will not publish GitHub release"
+      #       exit 0
+      #     fi
 
-          gh release create "${CM_TAG}" \
-              build/app/outputs/flutter-apk/*.apk
+      #     gh release create "${CM_TAG}" \
+      #         build/app/outputs/flutter-apk/*.apk
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
     publishing:
       email:
         recipients:
           - bagusmertasntn@gmail.com
+
+  ios-workflow:
+    name: "iOS ToDo's App Workflow"
+    instance_type: mac_mini_m1
+    max_build_duration: 120
+    environment:
+      groups:
+        - todos-app
+      flutter: stable
+      xcode: latest # <-- set to specific version e.g. 14.3, 15.0 to avoid unexpected updates.
+      cocoapods: default
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    triggering:
+      events:
+        - tag
+      branch_patterns:
+        - pattern: "*"
+          include: true
+          source: true
+      tag_patterns:
+        - pattern: "*"
+          include: true
+      cancel_previous_builds: false
+    scripts:
+      - name: Set up code signing settings on Xcode project
+        script: |
+          xcode-project use-profiles
+      - name: Get Flutter packages
+        script: |
+          flutter packages pub get
+      - name: Install pods
+        script: |
+          find . -name "Podfile" -execdir pod install \;
+      - name: Flutter analyze
+        script: |
+          flutter analyze
+      - name: Flutter unit tests
+        script: |
+          flutter test
+        ignore_failure: true
+      - name: Flutter build ipa and automatic versioning
+        script: |
+          flutter build ipa --release \
+            --build-name=1.0.0 \
+            --build-number=$(($(app-store-connect get-latest-app-store-build-number "$APP_ID") + 1)) \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      # See the following link for details about email publishing - https://docs.codemagic.io/publishing-yaml/distribution/#email
+      email:
+        recipients:
+          - bagusmertasntn@gmail.com
+        notify:
+          success: true # To receive a notification when a build succeeds
+          failure: false # To not receive a notification when a build fails
+
+        # Configuration related to App Store (optional)
+        # Note: This action is performed during post-processing.
+        submit_to_app_store: false
